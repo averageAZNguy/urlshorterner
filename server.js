@@ -1,18 +1,20 @@
 var express = require('express');
 var app = express();
+var mongodb = require('mongodb');
 var mongoose = require('mongoose');
 var bodyparser = require('body-parser');
 var port = 8080;
 var urlregex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+var dbUri = process.env.MONGOLAB_URI;
 
-// var refcode = [0,1,2,3,4,5,6,7,8,9,"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x",'y','z']
+var refcode = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x",'y','z']
 // APP CONFIG
 app.use(bodyparser.urlencoded({extended: true}))
 app.use(express.static('css'));
 app.set('view engine', 'ejs')
 
 //create or connect to mongodb
-mongoose.connect('mongodb://localhost/shorturl');
+mongoose.connect(dbUri);
 var urlSchema = new mongoose.Schema({
 	ori_url : String,
 	new_url : String
@@ -61,17 +63,21 @@ app.get('/zap/:http*',function(req,res){
 
 // SHOW ROUTE
 app.get('/:shawty',function(req,res){
-	Url.find({new_url: req.params.shawty},function(err,link){
+	
+
+		Url.find({new_url: req.params.shawty},function(err,link){
 		if(err){
 			res.redirect('/')
 		}
 		else {
+			// res.send(link)
 			res.redirect(link[0].ori_url)
 		}
 	})
+	
 })
 
-// dbCreate('http://www.indeed.com','004')
+// dbCreate('http://www.indeed.com','000')
 // // listen for requests :)
 // // var listener = app.listen(process.env.PORT, function () {
 // //   console.log('Your app is listening on port ' + listener.address().port);
